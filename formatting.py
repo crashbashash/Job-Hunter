@@ -41,7 +41,7 @@ def format_reed_raw_links(terms: str):
                     job_title += c
 
         for term in terms.split(' '):
-            if term in job_title:
+            if term.lower() in job_title.lower() and len(term) > 3:
                 jobs_links.append(f'{job_title}||||{url}\n')
                 break
 
@@ -67,9 +67,53 @@ def format_indeed_raw_links(terms: str):
                     title = info.replace('title="', '').replace('"', '').strip()
 
         for term in terms.split(' '):
-            if term in title:
+            if term.lower() in title.lower() and len(term) > 3:
                 jobs_links.append(f'{title}||||{link}\n')
                 break
 
     with open('job_links.txt', 'a') as f:
         f.writelines(jobs_links)
+
+
+def format_cv_library_raw_links(terms: str):
+    with open('cv_library_raw_links.txt', 'r') as f:
+        lines = f.readlines()
+
+    job_links = list()
+
+    for line in lines:
+        link = 'https://www.cv-library.co.uk'
+        title = ''
+        href_pos = line.find('href="')
+        title_pos = line.find('title="')
+
+        link_start = False
+        title_start = False
+        for i in range(href_pos,len(line)):
+            c = line[i]
+            if c == '"' and not link_start:
+                link_start = True
+            elif link_start:
+                if c != '"':
+                    link += c
+                else:
+                    break
+
+        for i in range(title_pos, len(line)):
+            c = line[i]
+            if c == '"' and not title_start:
+                title_start = True
+            elif title_start:
+                if c != '"':
+                    title += c
+                else:
+                    break
+
+        terms_split = terms.split(' ')
+        for term in terms_split:
+            if term.lower() in title.lower() and len(term) > 3:
+                job_links.append(f'{title}||||{link}')
+                break
+
+        with open('job_links.txt', 'a') as f:
+            f.writelines(job_links)

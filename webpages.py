@@ -109,3 +109,40 @@ def get_indeed_webpage(last_page, search_terms: str, postcode: str, proximity: s
         f.write(response.text)
 
     return True
+
+
+def get_cv_library_webpage(search_terms: str, postcode: str, proximity: str, page=1, perm=False, temp=False, part_time=False, contract=False):
+    headers = {
+        'authority': 'www.cv-library.co.uk',
+        'upgrade-insecure-requests': '1',
+        'dnt': '1',
+        'user-agent': random_user_agent(),
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        'sec-fetch-site': 'same-origin',
+        'sec-fetch-mode': 'navigate',
+        'sec-fetch-user': '?1',
+        'sec-fetch-dest': 'document',
+        'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
+    }
+
+    if proximity == '30':
+        proximity = '35'
+
+    params = (
+        ('q', search_terms),
+        ('distance', proximity),
+        ('page', str(page)),
+        ('contract', contract),
+        ('temporary', temp),
+        ('permanent', perm),
+        ('part-time', part_time),
+    )
+
+    response = requests.get(f'https://www.cv-library.co.uk/jobs-in-{postcode.lower()}', headers=headers, params=params)
+
+    if '0 jobs found.' in response.text:
+        return False
+
+    with open('response.html', 'w') as f:
+        f.write(response.text)
+    return True

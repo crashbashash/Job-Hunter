@@ -35,5 +35,20 @@ def filter_indeed_raw_links():
                     raw_link += text.replace('\n', '') + '||||'
             raw_link_list.append(raw_link + '\n')
 
-    with open(f'indeed_raw_links.txt', 'a') as f:
+    with open('indeed_raw_links.txt', 'a') as f:
+        f.writelines(raw_link_list)
+
+
+def filter_cv_library_links():
+    raw_link_list = list()
+
+    with open('response.html', 'r') as f:
+        file_lines = f.readlines()
+
+    for line in file_lines:
+        line = line.strip()
+        if '<a href="/job/' in line and 'title="' in line:
+            raw_link_list.append(line + '\n')
+
+    with open('cv_library_raw_links.txt', 'a') as f:
         f.writelines(raw_link_list)

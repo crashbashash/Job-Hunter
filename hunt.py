@@ -209,11 +209,14 @@ def main():
         postcode = postcode.lower().replace(' ', '')
         clear()
 
-        # Make sure the 'raw_links.txt' document is create and blanked out
+        # Make sure the '<website>_raw_links.txt' document for all the websites are created
         with open('reed_raw_links.txt', 'w+') as f:
             f.write('')
 
         with open('indeed_raw_links.txt', 'w+') as f:
+            f.write('')
+
+        with open('cv_library_raw_links.txt', 'w+') as f:
             f.write('')
 
         with open('job_links.txt', 'w+') as f:
@@ -232,6 +235,7 @@ def main():
             else:
                 break
 
+        # Get indeed links
         page_no = 1
         while True:
             if page_no > 5:
@@ -250,8 +254,22 @@ def main():
             else:
                 break
 
+        # Get CV Library links
+        page_no = 1
+        while True:
+            if page_no > 5:
+                break
+
+            if webpages.get_cv_library_webpage(search_terms, postcode, proximity, page_no, perm, temp, part_time, contract):
+                print_info(f'Filtering CV Library Jobs Page {page_no}')
+                filters.filter_cv_library_links()
+                page_no += 1
+            else:
+                break
+
         formatting.format_reed_raw_links(search_terms)
         formatting.format_indeed_raw_links(search_terms)
+        formatting.format_cv_library_raw_links(search_terms)
         display_jobs()
     except KeyboardInterrupt:
         print_error('\'Keyboard Interrupt\' Intercepted!!!\nQuitting...', True)
