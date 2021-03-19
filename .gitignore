@@ -1,6 +1,7 @@
 
 *.txt
 *.html
-/.vscode/
-/.idea/
+.vscode/
+.idea/
+__pycache__/
 *.xml
