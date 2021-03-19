@@ -5,6 +5,11 @@ import filters
 import formatting
 import webbrowser
 from display import print_info, print_input, print_error, print_job, clear
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-p', help='Max number of pages to fetch from each website', type=int)
+args = parser.parse_args()
 
 
 def get_terms():
@@ -204,6 +209,11 @@ def display_jobs():
 
 
 def main():
+    if args.p is None:
+        max_pages = 6
+    else:
+        max_pages = args.p + 1
+
     try:
         search_terms, postcode, proximity, perm, temp, part_time, full_time, contract = get_search_info()
         postcode = postcode.lower().replace(' ', '')
@@ -221,26 +231,17 @@ def main():
 
         with open('job_links.txt', 'w+') as f:
             f.write('')
-        
-        page_no = 1  # Set current page number for reed
-        # Get reed links
-        while True:
-            if page_no > 5:
-                break
 
+        # Get reed links
+        for page_no in range(1, max_pages):
             if webpages.get_reed_webpage(search_terms, postcode, proximity, page_no, perm, temp, full_time, part_time, contract):
                 print_info(f'Filtering Reed Jobs Page {page_no}')
                 filters.filter_reed_raw_links()
-                page_no += 1
             else:
                 break
 
         # Get indeed links
-        page_no = 1
-        while True:
-            if page_no > 5:
-                break
-
+        for page_no in range(1, max_pages):
             try:
                 with open('response.html', 'r') as f:
                     prev_page = f.read()
@@ -250,16 +251,11 @@ def main():
             if webpages.get_indeed_webpage(prev_page, search_terms, postcode, proximity, page_no, perm, full_time, part_time, contract):
                 print_info(f'Filtering Indeed Jobs Page {page_no}')
                 filters.filter_indeed_raw_links()
-                page_no += 1
             else:
                 break
 
         # Get CV Library links
-        page_no = 1
-        while True:
-            if page_no > 5:
-                break
-
+        for page_no in range(1, max_pages):
             if webpages.get_cv_library_webpage(search_terms, postcode, proximity, page_no, perm, temp, part_time, contract):
                 print_info(f'Filtering CV Library Jobs Page {page_no}')
                 filters.filter_cv_library_links()
